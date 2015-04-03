@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "正在删除相关文件"
+sudo rm -rf /usr/lib/jvm/
+wait
+echo "删除相关文件成功"
+
+echo "恢复配置文件"
+# sudo rm -f /etc/environment
+# sudo mv /etc/environment.backup.java /etc/environment
+sudo rm /usr/bin/java /usr/bin/javac
+sudo rm /etc/alternatives/java /etc/alternatives/javac
+mv ~/.bashrc.backup.java ~/.bashrc
+echo "恢复配置文件成功"
