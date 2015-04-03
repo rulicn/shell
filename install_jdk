@@ -58,7 +58,7 @@ fi
 
 jdkfile=$(ls | grep jdk-*-linux-*.tar.gz)
 
-if [ ! -f "$jdkfile" ]; then
+if [ -f "$jdkfile" ]; then
 
 	sudo tar -zxvf $jdkfile -C /usr/lib/jvm/
 
