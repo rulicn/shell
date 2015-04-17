@@ -152,3 +152,15 @@ if __name__ == "__main__":
 
     else:
         print '没有数据'
+        
+        
+String ss = "啊是大三大四的阿萨德阿萨德阿萨德<>dvsdf第三方的身份斯蒂芬10,400个A<><ASDASD>";
+		
+Pattern pattern = Pattern.compile("第三方的身份斯蒂芬(\\d+[,]?\\d*)个");
+Matcher m = pattern.matcher(ss);
+if(m.find()){
+	String s = m.group();
+	s = s.substring(9).replaceAll(",", "");
+	s = s.substring(0, s.length() - 1);
+	System.out.println("s = " + s);
+}
