@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # author: biezhi
 
-import urllib,urllib2,json,datetime,sys
+import urllib,urllib2,re,json,datetime,sys
 
 #查询多少条
 pageCount = 1
@@ -48,44 +48,26 @@ def getJsonData():
 
         print e
 
-#解析从网络上获取的JSON数据
-def praserJsonFile(jsonData):
-
-    value = json.loads(jsonData)
-    rootlist = value.keys()
-    print rootlist
-    print duan
-    for rootkey in rootlist:
-        print rootkey
-    print duan
-    subvalue = value[rootkey]
-    print subvalue
-    print duan
-    for subkey in subvalue:
-        print subkey,subvalue[subkey]
 
 # 查询百度反链
 def searchRank(domain):
     try:
-        response = urllib2.urlopen('https://www.baidu.com/s?wd=%22www.' + domain + '%22')
+        # url = 'https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=www.'+ domain +'&rsv_pq=8c33fcdd000070ec&rsv_t=0d06WAQv97zMab5GF%2FBD0xNpMtj1sx0J9WrDet7lY4Us%2BYac4w5pvBGo6eI&rsv_enter=1&ct=0&tfflag=0&gpc=stf%3D'
+        url = 'https://www.baidu.com/s?wd=%22www.baidu.com%22'
+        response = urllib2.urlopen(url)
         result = response.read(timout*1000)
         if result == '' :
             return 0
-        if result.indexOf("很抱歉，没有找到与") != -1 && page.indexOf("请检查您的输入是否正确") != -1 :
+
+        print result
+
+        reg = r'百度为您找到相关结果约(\d+[,]?\d*)个'
+        pattern = re.compile(reg)
+        findList = re.findall(pattern, result)
+        if len(findList) > 0 :
+            print int(str(findList[0]).replace(',', ''))
+        else:
             return 0
-
-        pos = result.indexOf("百度为您找到相关结果约");
-
-        if pos != -1 :
-            end_pos = result.indexOf("个</div>", pos)
-			transString = result.substring(pos + 11, end_pos)
-			if transString.strip() != '' :
-				if transString.indexOf(",") != -1 :
-					transString = transString.replaceAll(",", "")
-				    sLong = long(transString.trim())
-					return sLong
-
-        return 0
     except Exception,e:
 
         print e
@@ -93,7 +75,10 @@ def searchRank(domain):
 # 主方法
 if __name__ == "__main__":
 
-    rank_count = int(raw_input("请输入反链个数:"))
+    rank_str = raw_input("请输入反链个数（默认20）:")
+
+    if rank_str != '' :
+        rank_count = int(rank_str)
 
     print div_line
 
@@ -147,20 +132,7 @@ if __name__ == "__main__":
         if len(strdata['data']) > 0:
             for domainkey in strdata['data']:
                 rank_num = searchRank(domainkey['Fulldomain'])
-
-
+                print domainkey['Fulldomain'] + ' ---- ' + str(rank_num)
 
     else:
         print '没有数据'
-        
-        
-String ss = "啊是大三大四的阿萨德阿萨德阿萨德<>dvsdf第三方的身份斯蒂芬10,400个A<><ASDASD>";
-		
-Pattern pattern = Pattern.compile("第三方的身份斯蒂芬(\\d+[,]?\\d*)个");
-Matcher m = pattern.matcher(ss);
-if(m.find()){
-	String s = m.group();
-	s = s.substring(9).replaceAll(",", "");
-	s = s.substring(0, s.length() - 1);
-	System.out.println("s = " + s);
-}
