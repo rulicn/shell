@@ -48,22 +48,41 @@ def getJsonData():
 
         print e
 
+# 重新加载所有数据 并计算进度
+def reLoadData():
+    tbody = ''
+    # 重新检索
+    jdata = getJsonData().decode('utf-8')
+
+    strdata = json.loads(jdata)
+
+    if len(strdata['data']) > 0:
+        for domainkey in strdata['data']:
+
+            rank_num = searchRank(domainkey['Fulldomain'].encode('utf-8'))
+            # rank_num = 100
+
+            if rank_num > rank_count:
+                tbody += '<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>'\
+                    .format(domainkey['Fulldomain'].encode('utf-8'), domainkey['BeianNum'].encode('utf-8'),
+                            domainkey['Regdate'].encode('utf-8'), domainkey['Deldate'].encode('utf-8'), str(rank_num),
+                            domainkey['BdWeight'].encode('utf-8'))
+
+    return tbody
 
 # 查询百度反链
 def searchRank(domain):
     try:
-        # url = 'https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=www.'+ domain +'&rsv_pq=8c33fcdd000070ec&rsv_t=0d06WAQv97zMab5GF%2FBD0xNpMtj1sx0J9WrDet7lY4Us%2BYac4w5pvBGo6eI&rsv_enter=1&ct=0&tfflag=0&gpc=stf%3D'
-        url = 'https://www.baidu.com/s?wd=%22www.baidu.com%22'
-        response = urllib2.urlopen(url)
-        result = response.read(timout*1000)
-        if result == '' :
-            return 0
+        url = 'http://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=www.' + domain
+        # url = 'https://www.baidu.com/s?wd=%22www.baidu.com%22'
+        i_headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0"}
 
-        print result
+        req = urllib2.Request(url, headers=i_headers)
+        content = urllib2.urlopen(req).read()
 
         reg = r'百度为您找到相关结果约(\d+[,]?\d*)个'
         pattern = re.compile(reg)
-        findList = re.findall(pattern, result)
+        findList = re.findall(pattern, content)
         if len(findList) > 0 :
             print int(str(findList[0]).replace(',', ''))
         else:
@@ -71,6 +90,17 @@ def searchRank(domain):
     except Exception,e:
 
         print e
+
+# 导出结果为html
+def exportHtml(tbody):
+
+    htmlContent = '<html><head><meta charset="utf-8"/><style type="text/css">table{{font-family:"微软雅黑","Trebuchet MS",Arial,Helvetica,sans-serif;width:100%;border-collapse:collapse;width:1000px}}table td,th{{font-size:1em;border:1px solid#98bf21;padding:3px 7px 2px 7px}}table th{{font-size:1.1em;text-align:left;padding-top:5px;padding-bottom:4px;background-color:#A7C942;color:#ffffff}}table tr.alt td{{color:#000000;background-color:#EAF2D3}}</style></head><body><table align="center"><tr><th width="300">域名</th><th width="100">备案号</th><th width="80">原注册</th><th width="50">删除时间</th><th width="80">反链数</th><th width="50">权重</th></tr><tbody>{0}</tbody></table></body></html>'.format(tbody)
+
+    filename = datetime.date.today().strftime("%Y%m%d") + '.html'
+    htmlfile = open(filename, 'w')
+    htmlfile.write(htmlContent)
+    htmlfile.close()
+
 
 # 主方法
 if __name__ == "__main__":
@@ -120,19 +150,7 @@ if __name__ == "__main__":
 
     if totalCount > 0 :
         pageCount = totalCount
-
-        # 重新检索
-        jdata = getJsonData()
-
-        print  jdata;
-
-        strdata = json.loads(jdata)
-
-
-        if len(strdata['data']) > 0:
-            for domainkey in strdata['data']:
-                rank_num = searchRank(domainkey['Fulldomain'])
-                print domainkey['Fulldomain'] + ' ---- ' + str(rank_num)
+        exportHtml(reLoadData())
 
     else:
         print '没有数据'
