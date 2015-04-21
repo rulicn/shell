@@ -91,8 +91,8 @@ def searchRank(domain):
 
         print e
 
-# 导出结果为html
-def exportHtml(tbody):
+# 导出结果为csv格式
+def exportCSV(tbody):
 
     htmlContent = '<html><head><meta charset="utf-8"/><style type="text/css">table{{font-family:"微软雅黑","Trebuchet MS",Arial,Helvetica,sans-serif;width:100%;border-collapse:collapse;width:1000px}}table td,th{{font-size:1em;border:1px solid#98bf21;padding:3px 7px 2px 7px}}table th{{font-size:1.1em;text-align:left;padding-top:5px;padding-bottom:4px;background-color:#A7C942;color:#ffffff}}table tr.alt td{{color:#000000;background-color:#EAF2D3}}</style></head><body><table align="center"><tr><th width="300">域名</th><th width="100">备案号</th><th width="80">原注册</th><th width="50">删除时间</th><th width="80">反链数</th><th width="50">权重</th></tr><tbody>{0}</tbody></table></body></html>'.format(tbody)
 
@@ -130,8 +130,6 @@ if __name__ == "__main__":
     if ins_day != '':
         day = int(ins_day)
 
-    print div_line
-
     # 获取总条数
     strdata = getJsonData()
 
@@ -150,7 +148,7 @@ if __name__ == "__main__":
 
     if totalCount > 0 :
         pageCount = totalCount
-        exportHtml(reLoadData())
+        exportCSV(reLoadData())
 
     else:
         print '没有数据'
