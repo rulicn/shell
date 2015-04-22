@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 # author: biezhi
 
-import urllib,urllib2,re,json,datetime,sys
+import urllib,urllib2,re,json,datetime,sys,csv
 
 #域名预定爬虫类
 class DomainSearch:
 
     #初始化方法，定义一些变量
     def __init__(self):
-        
+
         #查询多少条
         self.pageCount = 1
         #查询那一天的
@@ -35,15 +35,15 @@ class DomainSearch:
                 'Connection':'keep-alive','RA-Ver':'2.9.0'}
         # 查询百度反链的头信息
         self.bd_headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:32.0) Gecko/20100101 Firefox/32.0"}
-        
+
     # 获取json数据
     def getJsonData(self):
         try:
             #post_url = 'http://www.22.cn/ajax/YuDing/liebiao.ashx?t=0.7920176072511822&type=en'
             post_url = 'http://121.42.158.166/data.txt'
-            
+
             parameters = {'pageIndex':'1','pageCount': self.pageCount,'position':'1','doublep':'0','digit':'1,2,3','sskt':'1','regyear':'0','deltype':'0','suffix':'.com,.net','day':self.day,'show':'1','type':'0','strlen':'5,15'}
-        
+
             data = urllib.urlencode(parameters)
 
             # request = urllib2.Request(post_url, data, headers)
@@ -63,7 +63,7 @@ class DomainSearch:
 
     # 重新加载所有数据 并计算进度
     def reLoadData(self):
-        tbody = ''
+        csvdata = []
         # 重新检索
         jdata = self.getJsonData().decode('utf-8')
 
@@ -72,21 +72,21 @@ class DomainSearch:
         if len(strdata['data']) > 0:
             for domainkey in strdata['data']:
 
-                rank_num = self.searchRank(domainkey['Fulldomain'].encode('utf-8'))
-                # rank_num = 100
+                full_domain = domainkey['Fulldomain'].encode('utf-8')
 
-                if rank_num > dm.rank_count:
-                    tbody += '<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>'\
-                        .format(domainkey['Fulldomain'].encode('utf-8'), domainkey['BeianNum'].encode('utf-8'),
-                                domainkey['Regdate'].encode('utf-8'), domainkey['Deldate'].encode('utf-8'), str(rank_num),
-                                domainkey['BdWeight'].encode('utf-8'))
+                rank_num = int(self.searchRank(full_domain))
 
-        return tbody
+                if rank_num >= self.rank_count:
+                    csvdata.append( (full_domain, domainkey['BeianNum'].encode('gb2312'),
+                                     domainkey['Regdate'], domainkey['Deldate'],
+                                     str(rank_num), domainkey['BdWeight']
+                                     ) )
 
+        return csvdata
 
 
     # 查询百度反链
-    def searchRank(self,domain):
+    def searchRank(self, domain):
         try:
             url = 'http://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd=www.' + domain
             # url = 'https://www.baidu.com/s?wd=%22www.baidu.com%22'
@@ -96,64 +96,73 @@ class DomainSearch:
 
             findList = re.findall(self.bd_pattern, content)
             if len(findList) > 0 :
-                print int(str(findList[0]).replace(',', ''))
+                return str(findList[0]).replace(',', '')
             else:
-                return 0
+                return '0'
         except urllib2.URLError, e:
             if hasattr(e,"reason"):
                 print u"连接百度失败,错误原因",e.reason
                 return None
 
     # 导出结果为csv格式
-    # def exportCSV(tbody):
+    def exportCSV(self, csvdata):
+
+        if csvdata :
+            filename = datetime.date.today().strftime("%Y%m%d") + '.csv'
+            csvfile = file(filename, 'w')
+            writer = csv.writer(csvfile)
+            writer.writerow([u'域名'.encode('gb2312'), u'备案号'.encode('gb2312'), u'原注册时间'.encode('gb2312'),
+                             u'删除时间'.encode('gb2312'), u'反链数'.encode('gb2312'), u'权重'.encode('gb2312')])
+            writer.writerows(csvdata)
+            csvfile.close()
 
     def run(self):
-        rank_str = raw_input("请输入反链个数（默认20）:")
+        rank_str = raw_input(u"请输入反链个数（默认20）:")
         if rank_str != '' :
             self.rank_count = int(rank_str)
         print self.div_line
-    
+
         # 今天日期
         today = datetime.date.today()
         # 一天的时间
         oneday = datetime.timedelta(days=1)
-    
+
         today_1 = (today + oneday*1).strftime("%Y-%m-%d")
         today_2 = (today + oneday*2).strftime("%Y-%m-%d")
         today_3 = (today + oneday*3).strftime("%Y-%m-%d")
         today_4 = (today + oneday*4).strftime("%Y-%m-%d")
-    
+
         date_str = '(1)' + today_1 + '\n(2)' + today_2 + '\n(3)' + today_3 + '\n(4)' + today_4 + '\n请输入查询日期: ';
-    
+
         ins_day = raw_input(date_str)
-    
+
         # 查询日期条件
         if ins_day != '':
             self.day = int(ins_day)
-    
+
         # 获取总条数
         strdata = self.getJsonData()
-    
+
         # print strdata
-    
+
         print self.div_line
-    
+
         jdata = json.loads(strdata);
-    
+
         # 总记录数
         totalCount = jdata['totalCount'];
-    
+
         print '共检索到' + str(totalCount) + '条数据'
-    
+
         print self.div_line
-    
+
         if totalCount > 0 :
-            pageCount = totalCount
-            # exportCSV(reLoadData())
+            self.pageCount = totalCount
+            self.exportCSV(self.reLoadData())
         else:
             print '没有数据'
-            
+
 # 主方法
 if __name__ == "__main__":
-    dm = DomainSearch()
-    dm.run()
+    ds = DomainSearch()
+    ds.run()
