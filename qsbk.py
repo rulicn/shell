@@ -13,7 +13,7 @@ class QSBK:
 
     def __init__(self):
         self.page = 1
-        self.pages = []
+        self.datas = []
         self.enable = False
 
     # 将所有的段子都扣出来，添加到列表中并且返回列表
@@ -46,7 +46,7 @@ class QSBK:
            try:
                 # 获取新的页面中的段子们
                 myPage = self.GetPage()
-                self.pages.append(myPage)
+                self.datas.append(myPage)
            except:
                 print '无法链接糗事百科！'
 
@@ -75,9 +75,9 @@ class QSBK:
         #----------- 加载处理糗事百科 -----------
         while self.enable:
             # 如果self的page数组中存有元素
-            if self.pages:
-                items = self.pages[0]
-                del self.pages[0]
+            if self.datas:
+                items = self.datas[0]
+                del self.datas[0]
                 self.ShowPage(items)
                 self.page += 1
 
