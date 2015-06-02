@@ -48,10 +48,13 @@ if [ -f "$tomcatfile" ]; then
 	mv ~/.bashrc ~/.bashrc.backup.tomcat
 	cat ~/.bashrc.backup.tomcat >> ~/.bashrc
 	
-	echo "PATH=\"$PATH:$tomcatpath$tomcatname\"" >> ~/.bashrc
+	#echo "PATH=\"$PATH:$tomcatpath$tomcatname\"" >> ~/.bashrc
 	echo "TOMCAT_HOME=$tomcatpath$tomcatname" >> ~/.bashrc
 	echo "CATALINA_HOME=$tomcatpath$tomcatname" >> ~/.bashrc
+	echo "export PATH=\"$PATH:$tomcatpath$tomcatname\"" >> ~/.bashrc
+	
 	source ~/.bashrc
+	
 	echo "配置环境成功"
 	
 	echo "安装成功"
