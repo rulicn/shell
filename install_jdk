@@ -20,7 +20,7 @@ if [ ! -d "$jvmpath" ]; then
 	echo "目录$jvmpath创建成功"
 fi
 
-jdkfile=$(ls | grep jdk-*-linux-*.tar.gz)
+jdkfile=$(ls | grep jdk-*-linux-*.gz)
 jdkdirname=""
 
 if [ "$jdk_version" = "JDK1.7" ]; then
@@ -49,7 +49,7 @@ else
 	echo "您正在使用32位操作系统，为您选择32位JDK和eclipse"
 	# 不存在即去外网下载jdk文件
 	if [ ! -f "$jdkfile" ]; then
-		if [ "JDK1.7"="$jdk_version" ]; then
+		if [ "$jdk_version" = "JDK1.7" ]; then
 			wget http://7vil1r.com1.z0.glb.clouddn.com/jdk-7u75-linux-i586.gz
 		else
 			wget http://7vil1r.com1.z0.glb.clouddn.com/jdk-8u20-linux-i586.gz
@@ -57,7 +57,7 @@ else
 	fi
 fi
 
-jdkfile=$(ls | grep jdk-*-linux-*.tar.gz)
+jdkfile=$(ls | grep jdk-*-linux-*.gz)
 
 if [ -f "$jdkfile" ]; then
 
