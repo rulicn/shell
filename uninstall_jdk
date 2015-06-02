@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "正在删除相关文件"
-sudo rm -rf /usr/lib/jvm/
+sudo rm -rf /usr/local/java/
 wait
 echo "删除相关文件成功"
 
