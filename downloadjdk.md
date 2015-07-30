@@ -12,8 +12,7 @@ Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebacku
 ```
 So, if you want to download jdk7u4 for 64-bit Linux (e.g., Ubuntu) using wget, you can use:
 ```bash
-wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" 
-"http://download.oracle.com/otn-pub/java/jdk/7u4-b20/jdk-7u4-linux-x64.tar.gz"
+wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u25-b17/jdk-8u25-linux-x64.tar.gz"
 ```
 Just for reference, here are the links to the current (at the time of posting) downloads of JDK and JRE
 *UPDATE*: instead of having new post for each JDK/JRE update I'll just keep updating this one
