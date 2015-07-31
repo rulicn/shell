@@ -46,7 +46,7 @@ then
 	fi	
 	#sudo chown -R jiangxin:jiangxin /usr/lib/jvm/jdk1.7.0_75
 else
-	echo "您正在使用32位操作系统，为您选择32位JDK和eclipse"
+	echo "您正在使用32位操作系统，为您选择32位JDK"
 	# 不存在即去外网下载jdk文件
 	if [ ! -f "$jdkfile" ]; then
 		if [ "$jdk_version" = "JDK1.7" ]; then
