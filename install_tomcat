@@ -27,7 +27,7 @@ fi
 # 不存在即去外网下载jdk文件
 if [ ! -f "$tomcatfile" ]; then
 	if [ "$tomcat_version" = "Tomcat7x" ]; then
-		wget http://mirror.metrocast.net/apache/tomcat/tomcat-7/v7.0.62/bin/apache-tomcat-7.0.62.tar.gz
+		wget http://apache.cs.utah.edu/tomcat/tomcat-7/v7.0.63/bin/apache-tomcat-7.0.63.tar.gz
 	else
 		wget http://mirror.tcpdiag.net/apache/tomcat/tomcat-8/v8.0.23/bin/apache-tomcat-8.0.23.tar.gz
 	fi
